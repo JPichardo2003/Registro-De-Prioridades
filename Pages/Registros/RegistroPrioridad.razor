@@ -1,0 +1,97 @@
+﻿@page "/RegistroPrioridades";
+@using RegistroDePrioridades.BLL;
+@using RegistroDePrioridades.Models;
+
+@inject PrioridadesBLL prioridadesBLL;
+
+<EditForm Model="prioridades" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h1>Registro Prioridad</h1>
+        </div>
+        <div class="card-body">
+            <label>ID:</label>
+            <div class="input-group">
+                <InputNumber @bind-Value="prioridades.PrioridadId" class="custom-input"></InputNumber>
+                <button type="button" class="btn btn-primary oi oi-magnifying-glass" @onclick="Buscar"></button>
+            </div>
+            <div>
+                <label>Descripcion:</label>
+                <InputText @bind-Value="prioridades.Descripcion" class="form-control"></InputText>
+                <ValidationMessage For="@(() => prioridades.Descripcion)" />
+                @if (descripcionExistente)
+                {
+                    <p class="text-danger">Ya existe una Prioridad con esta descripción.</p>
+                }
+            </div>
+            <div>
+                <label>Dias compromiso:</label>
+                <InputNumber @bind-Value="prioridades.DiasCompromiso" class="form-control"></InputNumber>
+                <ValidationMessage For="@(() => prioridades.DiasCompromiso)" />
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-primary" @onclick="Nuevo">Nuevo <i class="oi oi-file" /></button>
+            <button type="submit" class="btn btn-success">Guardar <i class="oi oi-document" /></button>
+            <button type="button" class="btn btn-danger" @onclick="Eliminar">Eliminar <i class="oi oi-trash" /></button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int PrioridadId { get; set; }
+    public Prioridades prioridades = new Prioridades();
+    private bool descripcionExistente = false;
+
+    protected override void OnInitialized()
+    {
+        if (PrioridadId > 0)
+        {
+            prioridades.PrioridadId = PrioridadId;
+            Buscar();
+        }
+    }
+    public void Buscar()
+    {
+        var prioridadEncontrada = prioridadesBLL.Buscar(prioridades.PrioridadId);
+
+        if (prioridadEncontrada != null)
+        //asignar la instancia si encontramos la PrioridadId que buscamos
+            this.prioridades = prioridadEncontrada;
+    }
+    public bool Validar()
+    {
+        descripcionExistente = false; 
+
+        var prioridadExistente = prioridadesBLL.BuscarPorDescripcion(prioridades.Descripcion);
+
+        if (prioridadExistente != null && prioridadExistente.PrioridadId != prioridades.PrioridadId)
+        {
+            // Ya existe una Prioridad con la misma descripción
+            descripcionExistente = true;
+            return false;
+        }
+        return !string.IsNullOrEmpty(prioridades.Descripcion) && !(prioridades.DiasCompromiso < 0);
+    }
+    public void Nuevo()
+    {
+        this.prioridades = new Prioridades();
+        descripcionExistente = false;
+    }
+    public void Guardar()
+    {
+        if (Validar() && prioridadesBLL.Guardar(this.prioridades))
+        {
+            Nuevo();
+        }
+    }
+    public void Eliminar()
+    {
+        if (Validar() && prioridadesBLL.Eliminar(this.prioridades))
+        {
+            Nuevo();
+        }
+    }
+}
