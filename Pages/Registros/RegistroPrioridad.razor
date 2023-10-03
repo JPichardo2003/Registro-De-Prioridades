@@ -1,6 +1,4 @@
 ﻿@page "/RegistroPrioridades";
-@using RegistroDePrioridades.BLL;
-@using RegistroDePrioridades.Models;
 
 @inject PrioridadesBLL prioridadesBLL;
 
@@ -58,7 +56,6 @@
         var prioridadEncontrada = prioridadesBLL.Buscar(prioridades.PrioridadId);
 
         if (prioridadEncontrada != null)
-        //asignar la instancia si encontramos la PrioridadId que buscamos
             this.prioridades = prioridadEncontrada;
     }
     public bool Validar()
@@ -69,7 +66,6 @@
 
         if (prioridadExistente != null && prioridadExistente.PrioridadId != prioridades.PrioridadId)
         {
-            // Ya existe una Prioridad con la misma descripción
             descripcionExistente = true;
             return false;
         }
@@ -89,7 +85,7 @@
     }
     public void Eliminar()
     {
-        if (Validar() && prioridadesBLL.Eliminar(this.prioridades))
+        if (prioridadesBLL.Eliminar(this.prioridades))
         {
             Nuevo();
         }
