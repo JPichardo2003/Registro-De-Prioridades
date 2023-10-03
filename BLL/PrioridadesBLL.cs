@@ -7,24 +7,24 @@ namespace RegistroDePrioridades.BLL
 {
     public class PrioridadesBLL
     {
-        private Contexto contexto;
+        private readonly Contexto _contexto;
         public PrioridadesBLL(Contexto contexto)
         {
-            this.contexto = contexto;
+            _contexto = contexto;
         }
         public bool Existe(int PrioridadId)
         {
-            return contexto.Prioridades.Any(p => p.PrioridadId == PrioridadId);
+            return _contexto.Prioridades.Any(p => p.PrioridadId == PrioridadId);
         }
         public bool Insertar(Prioridades prioridades)
         {
-            contexto.Prioridades.Add(prioridades);
-            return contexto.SaveChanges() > 0;
+            _contexto.Prioridades.Add(prioridades);
+            return _contexto.SaveChanges() > 0;
         }
         public bool Modificar(Prioridades prioridades)
         {
-            contexto.Update(prioridades);
-            int modificado = contexto.SaveChanges();
+            _contexto.Update(prioridades);
+            int modificado = _contexto.SaveChanges();
             return modificado > 0;
         }
         public bool Guardar(Prioridades prioridades)
@@ -36,28 +36,25 @@ namespace RegistroDePrioridades.BLL
         }
         public bool Eliminar(Prioridades prioridades)
         {
-            contexto.Entry(prioridades).State = EntityState.Deleted;
-            return contexto.SaveChanges() > 0;
+            _contexto.Entry(prioridades).State = EntityState.Deleted;
+            return _contexto.SaveChanges() > 0;
         }
-
         public Prioridades? BuscarPorDescripcion(string? descripcion)
         {
-            return contexto.Prioridades.SingleOrDefault(p => p.Descripcion == descripcion);
+            return _contexto.Prioridades.SingleOrDefault(p => p.Descripcion == descripcion);
         }
-
         public Prioridades? Buscar(int PrioridadId)
         {
-            return contexto.Prioridades
+            return _contexto.Prioridades
                     .AsNoTracking()
                     .SingleOrDefault(p => p.PrioridadId == PrioridadId);
         }
         public List<Prioridades> Listar(Expression<Func<Prioridades, bool>> Criterio)
         {
-            return contexto.Prioridades
+            return _contexto.Prioridades
                     .Where(Criterio)
                     .AsNoTracking()
                     .ToList();
         }
-
     }
 }
