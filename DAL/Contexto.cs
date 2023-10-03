@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RegistroDePrioridades.Models;
-
 namespace RegistroDePrioridades.DAL
 {
     public class Contexto : DbContext
